@@ -35,6 +35,7 @@ def run_bot() -> None:
     application.add_handler(CallbackQueryHandler(handlers.general_menu_callback_handle, pattern='^show_profile'))
     application.add_handler(CallbackQueryHandler(handlers.general_menu_callback_handle, pattern='^get_vpn_settings'))
     application.add_handler(CallbackQueryHandler(handlers.general_menu_callback_handle, pattern='^check_payment'))
+    application.add_handler(CallbackQueryHandler(handlers.general_menu_callback_handle, pattern='^create_payment_link'))
 
     # start the bot
     application.run_polling()

@@ -42,6 +42,8 @@ async def general_menu_callback_handle(update: Update, context: CallbackContext)
         text, reply_markup = await get_vpn_settings(update.effective_user.id)
     elif query.data == 'check_payment':
         text, reply_markup = await get_payment_info(update.effective_user.id)
+    elif query.data == 'create_payment_link':
+        text, reply_markup = await get_payment_link(update.effective_user.id)
 
     await query.edit_message_text(text, reply_markup=reply_markup, parse_mode=ParseMode.HTML)
 
@@ -65,7 +67,7 @@ async def get_profile(telegram_user_id):
     if user['vpn_active'] in [None, False]:
         vpn_active = 'Не активна'
         keyboard.append([InlineKeyboardButton(text='🪙 Оплатить подписку',
-                                              url=await p.create_payment_link(telegram_user_id))])
+                                              callback_data='create_payment_link')])
         keyboard.append([InlineKeyboardButton('🔄 Проверить оплату', callback_data="check_payment")])
     else:
         vpn_active = f"Активна до {user['subscribe_to']}"
@@ -91,5 +93,17 @@ async def get_payment_info(telegram_user_id):
 
     text = 'АБВГД'
     keyboard = [[InlineKeyboardButton('⏪️', callback_data="show_profile")]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    return text, reply_markup
+
+
+async def get_payment_link(telegram_user_id):
+    link = await p.create_payment_link(telegram_user_id)
+    text = f'После оплаты нажмите на кнопку "🔄 Проверить оплату"'
+
+    keyboard = []
+    keyboard.append([InlineKeyboardButton('🌐 Ссылка для оплаты', url=link)])
+    keyboard.append([InlineKeyboardButton('🔄 Проверить оплату', callback_data="check_payment")])
+    keyboard.append([InlineKeyboardButton('⏪️', callback_data="show_profile")])
     reply_markup = InlineKeyboardMarkup(keyboard)
     return text, reply_markup

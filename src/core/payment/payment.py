@@ -1,6 +1,5 @@
 from datetime import datetime, date, timedelta
 
-
 from yoomoney import Client
 from yoomoney import Quickpay
 from yoomoney import Client
@@ -43,7 +42,10 @@ async def chech_payment_status(telegram_user_id):
                 if latest_payment < operation.datetime:
                     latest_payment = operation.datetime
 
+        attrs = {'last_payment': latest_payment,
+                 'vpn_active': True,
+                 'subscribe_to': (latest_payment + timedelta(days=31)).replace(hour=0, minute=0, second=0)}
+
         if latest_payment is not None:
-            await u.set_user_attrs(telegram_user_id, {'last_payment': latest_payment,
-                                                      'vpn_active': True,
-                                                      'subscribe_to': latest_payment + timedelta(days=30)})
+            await u.set_user_attrs(telegram_user_id=telegram_user_id,
+                                   attrs=attrs)
