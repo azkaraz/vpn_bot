@@ -39,7 +39,8 @@ async def general_menu_callback_handle(update: Update, context: CallbackContext)
     elif query.data == 'show_profile':
         text, reply_markup = await get_profile(update.effective_user.id)
     elif query.data == 'get_vpn_settings':
-        text, reply_markup = await get_vpn_settings(update.effective_user.id)
+        text, reply_markup, file = await get_vpn_settings(update.effective_user.id)
+        await query.message.reply_document(document=open(file.name, 'rb'))
     elif query.data == 'check_payment':
         text, reply_markup = await get_payment_info(update.effective_user.id)
     elif query.data == 'create_payment_link':
@@ -82,10 +83,14 @@ async def get_profile(telegram_user_id):
 
 
 async def get_vpn_settings(telegram_user_id):
-    text = 'Вот тут будут настройки для WireGuard'
+
+    api = WireGuardAPI()
+    client = api.get_or_create_clients(str(telegram_user_id))
+    qr_code_file = api.get_configuration(client['id'])
+    text = f"Публичный ключ: {client['publicKey']}\n"
     keyboard = [[InlineKeyboardButton('⏪️', callback_data="show_profile")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    return text, reply_markup
+    return text, reply_markup, qr_code_file
 
 
 async def get_payment_info(telegram_user_id):
