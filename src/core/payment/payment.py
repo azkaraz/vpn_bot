@@ -27,7 +27,7 @@ async def create_payment_link(telegram_user_id):
 
 
 async def chech_payment_status(telegram_user_id):
-    # Проверка статуса подписки
+    # Проверяет статус подписки по последнему платежу
     user_info = await u.get_user_attrs(telegram_user_id)
     vpn_active = user_info['vpn_active']
 
