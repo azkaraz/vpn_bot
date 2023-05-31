@@ -1,6 +1,6 @@
-from datetime import datetime, date, timedelta
+import datetime
+from datetime import timedelta
 
-from yoomoney import Client
 from yoomoney import Quickpay
 from yoomoney import Client
 
@@ -30,22 +30,31 @@ async def chech_payment_status(telegram_user_id):
     # Проверяет статус подписки по последнему платежу
     user_info = await u.get_user_attrs(telegram_user_id)
     vpn_active = user_info['vpn_active']
+    last_payment = user_info['last_payment']
 
+    # Рассматриваем только отключенных
     if not vpn_active:
+
+        # Получаем историю поступлений от клиента
         client = Client(WALLET_TOKEN)
         history = client.operation_history(label=telegram_user_id)
 
-        latest_payment = None
+        # Получаем самую последнюю оплату
         for operation in history.operations:
             if operation.status == 'success':
-                latest_payment = operation.datetime
-                if latest_payment < operation.datetime:
-                    latest_payment = operation.datetime
+                last_payment = operation.datetime
+                if last_payment < operation.datetime:
+                    last_payment = operation.datetime
 
-        attrs = {'last_payment': latest_payment,
-                 'vpn_active': True,
-                 'subscribe_to': (latest_payment + timedelta(days=31)).replace(hour=0, minute=0, second=0)}
+        # Получаем день окончания подписки
+        subscribe_to = (last_payment + timedelta(days=31)).replace(hour=0, minute=0, second=0)
 
-        if latest_payment is not None:
-            await u.set_user_attrs(telegram_user_id=telegram_user_id,
-                                   attrs=attrs)
+        # Если это позже, чем сегодня, то меняем vpn_active на True
+        if subscribe_to >= datetime.datetime.today():
+            vpn_active = True
+
+        # Обновляем данные в базе
+        new_attrs = {'last_payment': last_payment, 'vpn_active': vpn_active, 'subscribe_to': subscribe_to}
+        await u.set_user_attrs(telegram_user_id=telegram_user_id, attrs=new_attrs)
+
+    return subscribe_to, vpn_active

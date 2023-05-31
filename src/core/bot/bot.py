@@ -7,12 +7,10 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     CallbackQueryHandler,
-
 )
 
-from src.core.bot import handlers
+import handlers
 from src.core.config import TELEGRAM_TOKEN
-
 
 async def post_init(application: Application):
     await application.bot.set_my_commands([
