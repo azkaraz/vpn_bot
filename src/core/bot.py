@@ -4,7 +4,7 @@ from telebot import types
 from payment import create_payment_link, chech_payment_status
 
 
-bot = telebot.TeleBot('')
+bot = telebot.TeleBot('5854895024:AAEFFw548ac5MRXnOpbuYsoU9a-OOatBdOk')
 
 
 @bot.message_handler(commands=['start'])
