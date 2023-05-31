@@ -9,6 +9,7 @@ from telegram.ext import CallbackContext
 
 from src.core import users as u
 from src.core.payment import payment as p
+from src.core.service.wireguard_services import WireGuardAPI
 
 
 async def start_handle(update: Update, context: CallbackContext):
@@ -94,9 +95,11 @@ async def get_vpn_settings(telegram_user_id):
 
 
 async def get_payment_info(telegram_user_id):
-    await p.chech_payment_status(telegram_user_id)
-
-    text = 'АБВГД'
+    subscribe_to, vpn_active = await p.chech_payment_status(telegram_user_id)
+    if vpn_active:
+        text = f'Подписка оплачена до {subscribe_to}\nПерейдите на предыдущее окно, чтобы получить настройки для VPN'
+    else:
+        text = f'Подписка не оплачена\nЕсли, это не так, перейдите в раздел "❓Помощь"'
     keyboard = [[InlineKeyboardButton('⏪️', callback_data="show_profile")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
     return text, reply_markup
