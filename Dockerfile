@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+ENV PYTHONPATH "${PYTHONPATH}:/app"
+
 CMD ["python", "src/core/bot/bot.py"]

@@ -1,3 +1,4 @@
+import os
 import requests
 from src.core.config import WIREGUARD_URL, WIREGUARD_PASSWORD
 
@@ -92,6 +93,10 @@ class WireGuardAPI:
         #todo Надо бы записывать этот файл куда-то, а то возможна конкуретность за файл между пользователями
         config_text = response.text
         file_path = 'temp/wg.conf'
+
+        if not os.path.exists(file_path):
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
         with open(file_path, 'w') as file:
             file.write(config_text)
 
