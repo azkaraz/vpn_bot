@@ -105,3 +105,7 @@ class WireGuardAPI:
             raise Exception(f"Error getting clients: {error_message}")
         self.logout()
         return file
+
+
+    def disable_client(self):
+        pass
