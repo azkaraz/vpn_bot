@@ -1,0 +1,40 @@
+version: '3'
+services:
+  telegram-bot:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+
+    env_file:
+      - .env
+
+    ports:
+      - 8443:8443
+
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data:/data/db
+
+  wg-easy:
+    image: weejewel/wg-easy
+    container_name: wg-easy
+    environment:
+      - WG_HOST=127.0.0.1
+      - PASSWORD=2432546Wg
+    volumes:
+      - ~/.wg-easy:/etc/wireguard
+    ports:
+      - "51820:51820/udp"
+      - "51821:51821/tcp"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+    restart: unless-stopped
