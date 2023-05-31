@@ -3,7 +3,7 @@ from typing import Optional
 
 import pydantic
 
-from service.mongo_context_manager import MongoCollection
+from src.core.service.mongo_context_manager import MongoCollection
 from src.core.config import MONGO_DB, MONGO_DB_URL
 
 
